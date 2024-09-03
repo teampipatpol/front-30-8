@@ -30,17 +30,17 @@
         <v-icon left>mdi-package-variant-closed</v-icon>
         หน้าจัดการสินค้า
       </v-btn>
-      <v-btn v-if="isAdmin" :to="{ name: 'sales' }" text>
+      <!-- <v-btn v-if="isAdmin" :to="{ name: 'sales' }" text>
         <v-icon left>mdi-chart-bar</v-icon>
         ข้อมูลการขาย
-      </v-btn>
+      </v-btn> -->
       <v-btn v-if="isAdmin" :to="{ name: 'approve' }" text>
         <v-icon left>mdi-check-circle</v-icon>
         อนุมัติบัญชี
       </v-btn>
       <v-btn v-if="isAdmin" :to="{ name: 'salesdetail' }" text>
         <v-icon left>mdi-chart-bar</v-icon>
-        ข้อมูลการขาย2
+        ข้อมูลการขาย
       </v-btn>
 
       <v-spacer></v-spacer>

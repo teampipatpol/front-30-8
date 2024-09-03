@@ -6,8 +6,8 @@
       </v-card-title>
       <v-data-table
         :headers="headers"
-        :items="salesData"
-        item-key="_id"
+        :items="filteredSalesData"
+        item-key="billId"
         class="elevation-1"
       >
         <template v-slot:[`item.billId`]="{ item }">
@@ -17,13 +17,24 @@
           <span>{{ item.totalAmount }} บาท</span>
         </template>
         <template v-slot:[`item.products`]="{ item }">
-            <ul v-for="product in item.products" :key="product.name" class="product-item">
-              <img :src="`http://localhost:3000/${product.image}` || 'https://via.placeholder.com/150'" alt="Product Image" class="product-image">
-              <div class="product-info">
-                <span class="product-name">{{ product.name }}</span>
-                <span class="product-quantity">จำนวน: {{ product.quantity }}</span>
-                <span class="product-price">ราคาต่อชิ้น: {{ product.price }} บาท</span>
-              </div>
+          <ul
+            v-for="product in item.products"
+            :key="product.name"
+            class="product-item"
+          >
+            <img
+              :src="
+                `http://localhost:3000/${product.image}` ||
+                'https://via.placeholder.com/150'
+              "
+              alt="Product Image"
+              class="product-image"
+            />
+            <div class="product-info">
+              <span class="product-name">{{ product.name }}</span>
+              <span class="product-quantity">จำนวน: {{ product.quantity }}</span>
+              <span class="product-price">ราคาต่อชิ้น: {{ product.price }} บาท</span>
+            </div>
           </ul>
         </template>
         <template v-slot:[`item.actions`]="{ item }">
@@ -40,70 +51,107 @@
 </template>
 
 <script>
-import axios from 'axios'
+import axios from "axios";
+import Swal from "sweetalert2";
 
 export default {
-  
   data() {
     return {
       salesData: [],
       headers: [
-        { text: 'เลขที่คำสั่งซื้อ', value: 'billId' },
-        { text: 'รวมทั้งหมด', value: 'totalAmount' },
-        { text: 'รายละเอียดสินค้า', value: 'products' },
-        { text: 'ดำเนินการ', value: 'actions' }
-      ]
+        { text: "เลขที่คำสั่งซื้อ", value: "billId" },
+        { text: "รวมทั้งหมด", value: "totalAmount" },
+        { text: "รายละเอียดสินค้า", value: "products" },
+        { text: "ดำเนินการ", value: "actions" },
+      ],
     };
   },
   async created() {
     await this.fetchSales();
   },
-methods: {
-  async handleReturn(billId) {
-    console.log(`Handling return for billId: ${billId}`); // ตรวจสอบค่า billId
-    
-    if (!billId) {
-      console.error('Error: billId is undefined or null');
-      return;
-    }
-    
-    try {
-      const encodedBillId = encodeURIComponent(billId); // เข้ารหัส billId
-      const response = await axios.post(`http://localhost:3000/api/v1/orders/${encodedBillId}/return`);
-      console.log('Return successful:', response.data);
-    } catch (error) {
-      console.error('Error processing return:', error.response ? error.response.data : error.message);
-    }
+  computed: {
+    filteredSalesData() {
+      return this.salesData.filter(order => 
+        !order.products.some(product => product.status === 'returned')
+      );
+    },
   },
-  async handlePrint(billId) {
-    console.log(`Print button clicked for billId: ${billId}`);
-    // Implement print functionality here
-  },
-  
-  async fetchSales() {
-    try {
-      const response = await fetch('http://localhost:3000/api/v1/orders');
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const result = await response.json();
-      
-      if (result.status === 200 && result.message === 'รายการขายในแต่ละวัน') {
-        this.salesData = result.data.flatMap(day => 
-          day.bills.map(bill => ({
-            billId: bill.billId,
-            totalAmount: bill.totalAmount,
-            products: bill.products
-          }))
+  methods: {
+    async handleReturn(billId) {
+      console.log(`Handling return for billId: ${billId}`);
+
+      try {
+        const order = this.salesData.find((item) => item.billId === billId);
+        if (!order) {
+          console.error("Error: Order not found");
+          return;
+        }
+
+        const productBillId = order.products.length > 0 ? order.products[0].billId : null;
+        if (!productBillId) {
+          console.error("Error: No valid product.billId found");
+          return;
+        }
+
+        const returnedItems = order.products.map((product) => ({
+          productId: product.productId,
+          quantity: product.quantity,
+        }));
+
+        console.log("Returned items:", returnedItems);
+
+        const response = await axios.post(
+          `http://localhost:3000/api/v1/products/orders/${productBillId}/return`,
+          { returnedItems }
         );
-      } else {
-        console.error('Unexpected API response:', result);
+
+        console.log("Return successful:", response.data);
+
+        // Show success message
+        Swal.fire({
+          icon: 'success',
+          title: 'สำเร็จ',
+          text: 'คืนสินค้าเรียบร้อยแล้ว !',
+        });
+
+        await this.fetchSales();
+      } catch (error) {
+        console.error(
+          "Error processing return:",
+          error.response ? error.response.data : error.message
+        );
+
+        // Show error message
+        Swal.fire({
+          icon: 'error',
+          title: 'ไม่สามารถคืนสินค้าได้',
+          text: 'เกิดข้อผิดพลาด',
+        });
       }
-    } catch (error) {
-      console.error('Error fetching sales:', error);
-    }
+    },
+    handlePrint(billId) {
+      console.log(`Print button clicked for billId: ${billId}`);
+      window.print();
+    },
+    async fetchSales() {
+      try {
+        const response = await axios.get("http://localhost:3000/api/v1/orders");
+        console.log("API response:", response.data);
+
+        if (response.status === 200 && response.data.message === "รายการขายตามหมายเลขบิล") {
+          this.salesData = response.data.data.map((order) => ({
+            billId: order._id, 
+            totalAmount: order.totalAmount,
+            products: order.products,
+          }));
+        } else {
+          console.error("Unexpected API response:", response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching sales:", error);
+      }
+    },
   },
-},
 };
 </script>
 
@@ -155,8 +203,3 @@ methods: {
   margin-top: 16px;
 }
 </style>
-
-
-
-
-
