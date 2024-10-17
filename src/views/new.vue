@@ -9,6 +9,7 @@
   <template v-slot:[`item.actions`]="{ item }">
     <v-btn color="primary" @click="editItem(item)">แก้ไข</v-btn>
     <v-btn color="error" @click="deleteItem(item)">ลบ</v-btn>
+    
   </template>
 </v-data-table>
 
@@ -18,6 +19,7 @@
   </template>
   
   <script>
+  import axios from 'axios';
   export default {
     name: 'NewPage',
     data() {
@@ -36,14 +38,36 @@
         ],
       };
     },
+    methods: {
+    fetchUsers() {
+      axios.get('http://localhost:3000/api/v1')
+        .then(response => {
+          this.users = response.data.data;
+          console.log('test'+response);
+          console.log('test');
+
+        })
+        .catch(error => {
+          console.error(error);
+          console.log('dsd');
+
+        });
+        console.log('test');
+
+    },
+
     editItem(item) {
     alert(`แก้ไขข้อมูลของ ${item.name}`);
+    console.log("ลบ");
   },
   deleteItem(item) {
     alert(`ลบข้อมูลของ ${item.name}`);
-  },
+    console.log("ลบ");
 
+  },
+    }
   };
+  
   </script>
     <style scoped>
   </style>

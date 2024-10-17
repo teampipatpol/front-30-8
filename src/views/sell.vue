@@ -58,7 +58,6 @@
                   @click="removeFromCart(item._id)"
                 >
                   <i class="fas fa-times"></i>
-                  <!-- Cross icon using Font Awesome -->
                 </button>
           </div>
         </li>
@@ -116,6 +115,7 @@ export default {
         console.error("Error fetching products:", error);
       }
     },
+   
     addToCart(product) {
       if (product.quantity && product.quantity > 0 && product.quantity <= product.stock) {
         const cartItem = this.cart.find(item => item._id === product._id);
@@ -163,7 +163,7 @@ export default {
       });
     }
   } catch (error) {
-    console.error('เกิดข้อผิดพลาดขณะทำการขาย:', error); // บันทึกข้อผิดพลาดลง Console
+    console.error('เกิดข้อผิดพลาดขณะทำการขาย:', error);
     Swal.fire({
       title: "เกิดข้อผิดพลาด!",
       text: "เกิดข้อผิดพลาดขณะซื้อสินค้า.",

@@ -80,6 +80,11 @@ const routes = [
         name: 'sd4',
         component: () => import('../views/sd4.vue'),
       },
+      {
+        path: '/jib',
+        name: 'jib',
+        component: () => import('../views/jib.vue'),
+      },
     ],
   },
   {

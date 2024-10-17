@@ -9,40 +9,50 @@
     >
       <v-spacer></v-spacer>
 
-      <v-btn :to="{ name: 'Me' }" text>
+      <!-- <v-btn :to="{ name: 'Me' }" text>
         <v-icon left>mdi-account</v-icon>
         Me
-      </v-btn>
-      <v-btn :to="{ name: 'call' }" text>
+      </v-btn> -->
+      <!-- <v-btn :to="{ name: 'call' }" text>
         <v-icon left>mdi-calculator</v-icon>
         คำนวณเกรด
-      </v-btn>
-      <v-btn :to="{ name: 'sell' }" text>
+      </v-btn> -->
+      <v-btn  text>
         <v-icon left>mdi-cart</v-icon>
         ขายสินค้า
       </v-btn>
-      <v-btn :to="{ name: 'new' }" text>
+      
+      <!-- <v-btn :to="{ name: 'new' }" text>
         <v-icon left>mdi-flask</v-icon>
         ทดสอบ
-      </v-btn>
+      </v-btn> -->
 
-      <v-btn v-if="isAdmin" :to="{ name: 'addproduct' }" text>
-        <v-icon left>mdi-package-variant-closed</v-icon>
-        หน้าจัดการสินค้า
-      </v-btn>
+     
       <!-- <v-btn v-if="isAdmin" :to="{ name: 'sales' }" text>
         <v-icon left>mdi-chart-bar</v-icon>
         ข้อมูลการขาย
       </v-btn> -->
-      <v-btn v-if="isAdmin" :to="{ name: 'approve' }" text>
+      <!-- <v-btn v-if="isAdmin" :to="{ name: 'approve' }" text>
         <v-icon left>mdi-check-circle</v-icon>
         อนุมัติบัญชี
+      </v-btn> -->
+      <!-- <v-btn v-if="isAdmin" :to="{ name: 'sellfood' }" text>
+        <v-icon left>mdi-chart-bar</v-icon>
+        ขาย
+      </v-btn> -->
+      <v-btn v-if="isAdmin" :to="{ name: 'addproduct' }" text>
+        <v-icon left>mdi-package-variant-closed</v-icon>
+        หน้าจัดการสินค้า
       </v-btn>
       <v-btn v-if="isAdmin" :to="{ name: 'salesdetail' }" text>
         <v-icon left>mdi-chart-bar</v-icon>
         ข้อมูลการขาย
       </v-btn>
-
+     
+      <v-btn v-if="isAdmin" :to="{ name: 'dashboard' }" text>
+        <v-icon left>mdi-chart-bar</v-icon>
+        dashboard
+      </v-btn>
       <v-spacer></v-spacer>
 
       <span v-if="userName" class="username">{{ userName }}</span>

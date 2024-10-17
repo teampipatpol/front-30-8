@@ -32,8 +32,12 @@
             />
             <div class="product-info">
               <span class="product-name">{{ product.name }}</span>
-              <span class="product-quantity">จำนวน: {{ product.quantity }}</span>
-              <span class="product-price">ราคาต่อชิ้น: {{ product.price }} บาท</span>
+              <span class="product-quantity"
+                >จำนวน: {{ product.quantity }}</span
+              >
+              <span class="product-price"
+                >ราคาต่อชิ้น: {{ product.price }} บาท</span
+              >
             </div>
           </ul>
         </template>
@@ -71,8 +75,9 @@ export default {
   },
   computed: {
     filteredSalesData() {
-      return this.salesData.filter(order => 
-        !order.products.some(product => product.status === 'returned')
+      return this.salesData.filter(
+        (order) =>
+          !order.products.some((product) => product.status === "returned")
       );
     },
   },
@@ -87,7 +92,8 @@ export default {
           return;
         }
 
-        const productBillId = order.products.length > 0 ? order.products[0].billId : null;
+        const productBillId =
+          order.products.length > 0 ? order.products[0].billId : null;
         if (!productBillId) {
           console.error("Error: No valid product.billId found");
           return;
@@ -107,11 +113,10 @@ export default {
 
         console.log("Return successful:", response.data);
 
-        // Show success message
         Swal.fire({
-          icon: 'success',
-          title: 'สำเร็จ',
-          text: 'คืนสินค้าเรียบร้อยแล้ว !',
+          icon: "success",
+          title: "สำเร็จ",
+          text: "คืนสินค้าเรียบร้อยแล้ว !",
         });
 
         await this.fetchSales();
@@ -121,11 +126,10 @@ export default {
           error.response ? error.response.data : error.message
         );
 
-        // Show error message
         Swal.fire({
-          icon: 'error',
-          title: 'ไม่สามารถคืนสินค้าได้',
-          text: 'เกิดข้อผิดพลาด',
+          icon: "error",
+          title: "ไม่สามารถคืนสินค้าได้",
+          text: "เกิดข้อผิดพลาด",
         });
       }
     },
@@ -138,9 +142,12 @@ export default {
         const response = await axios.get("http://localhost:3000/api/v1/orders");
         console.log("API response:", response.data);
 
-        if (response.status === 200 && response.data.message === "รายการขายตามหมายเลขบิล") {
+        if (
+          response.status === 200 &&
+          response.data.message === "รายการขายตามหมายเลขบิล"
+        ) {
           this.salesData = response.data.data.map((order) => ({
-            billId: order._id, 
+            billId: order._id,
             totalAmount: order.totalAmount,
             products: order.products,
           }));
